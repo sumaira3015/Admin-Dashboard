@@ -5,7 +5,7 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 interface CartItem {
   id: string;
   name: string;
-  price: string;
+  price: number; 
   image: string;
   quantity: number;
 }
@@ -36,14 +36,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return [];
   });
 
-  // Effect to save cart to local storage whenever it changes
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   }, [cart]);
 
-  // Add item to cart
   const addToCart = (product: CartItem) => {
     setCart((prev) => {
       const existingProduct = prev.find((item) => item.id === product.id);
@@ -57,12 +55,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // Remove item from cart
   const removeFromCart = (id: string) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // Update quantity of an item
   const updateQuantity = (id: string, quantity: number) => {
     setCart((prev) =>
       prev.map((item) =>

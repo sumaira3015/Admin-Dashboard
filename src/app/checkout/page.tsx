@@ -34,7 +34,6 @@ const Checkout = () => {
     }
   }, []);
 
-  // Debounced handle change to reduce re-renders
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -47,7 +46,6 @@ const Checkout = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulating a submission delay
     setTimeout(() => {
       setIsLoading(false);
       alert("Shipping and payment details submitted!");

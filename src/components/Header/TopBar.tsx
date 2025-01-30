@@ -1,27 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
-import { QuestionMarkCircleIcon, ChevronDownIcon } from "@heroicons/react/24/outline"; // Import ChevronDownIcon for dropdown
+import { QuestionMarkCircleIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"; 
 import Link from "next/link";
 
 const TopHeader = () => {
-  // State to manage the visibility of the language dropdown.
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
 
   const toggleLanguageDropdown = () => {
     setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
   };
 
-  // Array of available languages for the dropdown.
   const languages = ["English", "Spanish", "French"];
 
   return (
     <div>
-      {/* Top Bar */}
       <div className="bg-[#272343] text-white h-[45px] flex items-center justify-between px-4 max-w-[1920px] mx-auto relative">
         <p className="text-sm font-normal font-inter hidden sm:block">
           Free shipping on all orders over $50
         </p>
+        
         <div className="flex items-center space-x-6">
           <div className="relative">
             <div
@@ -62,6 +61,22 @@ const TopHeader = () => {
             <QuestionMarkCircleIcon className="w-5 h-5 text-white" />
             <span className="text-sm font-normal font-inter">Need Help?</span>
           </div>
+
+          <SignedOut>
+            <div className="flex items-center space-x-2 cursor-pointer">
+              <SignInButton mode="modal">
+                <span className="text-sm font-normal font-inter hover:text-gray-300">
+                  Sign In
+                </span>
+              </SignInButton>
+            </div>
+          </SignedOut>
+
+          <SignedIn>
+            <div className="flex items-center space-x-2 cursor-pointer">
+              <UserButton />
+            </div>
+          </SignedIn>
         </div>
       </div>
     </div>

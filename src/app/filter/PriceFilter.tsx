@@ -1,101 +1,86 @@
-"use client";
+"use client"
 
-import { useState, useCallback } from "react";
+import { FC, useState } from "react";
+import ReactSlider from "react-slider";
+import { RotateCcw } from "lucide-react";
 
-interface PriceFilterProps {
-  onFilterChange: (filters: {
-    minPrice: number;
-    maxPrice: number;
-    isSale: boolean;
-    isInStock: boolean;
-    isNewArrival: boolean;
-  }) => void;
+interface ProductFiltersProps {
+  categories: string[];
 }
 
-const PriceFilter: React.FC<PriceFilterProps> = ({ onFilterChange }) => {
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1000);
-  const [isSale, setIsSale] = useState(false);
-  const [isInStock, setIsInStock] = useState(false);
-  const [isNewArrival, setIsNewArrival] = useState(false);
+const ProductFilters: FC<ProductFiltersProps> = ({ categories }) => {
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  // Debounced filter change using useCallback
-  const handleFilterChange = useCallback(() => {
-    if (minPrice > maxPrice) {
-      alert("Minimum price cannot be greater than maximum price.");
-      return;
-    }
-
-    onFilterChange({ minPrice, maxPrice, isSale, isInStock, isNewArrival });
-  }, [minPrice, maxPrice, isSale, isInStock, isNewArrival, onFilterChange]);
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((item) => item !== category)
+        : [...prev, category]
+    );
+  };
 
   return (
-    <div className="p-4 border border-gray-300 rounded-md shadow-md sticky top-0 bg-white">
-      <h2 className="text-lg font-semibold mb-4">Filters</h2>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Min Price:</label>
-          <input
-            type="number"
-            value={minPrice}
-            onChange={(e) => setMinPrice(Number(e.target.value))}
-            min="0"
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
+    <div className="sticky top-4 bg-white p-6 rounded-lg shadow-md w-full max-w-xs">
+      <h3 className="text-xl font-semibold mb-6">Filter Products</h3>
+      
+      {/* Category Filter */}
+      <div className="mb-6">
+        <h4 className="text-lg font-medium mb-2">Categories</h4>
+        <ul className="space-y-2">
+          {categories.map((category) => (
+            <li key={category} className="flex items-center">
+              <input
+                type="checkbox"
+                id={category}
+                value={category}
+                onChange={() => handleCategoryChange(category)}
+                checked={selectedCategories.includes(category)}
+                className="mr-2"
+              />
+              <label htmlFor={category} className="text-gray-700">
+                {category}
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Price Filter with Dual Slider */}
+      <div className="mb-6">
+        <h4 className="text-lg font-medium mb-2">Price Range</h4>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-gray-500">${priceRange[0]}</span>
+          <span className="text-gray-500">${priceRange[1]}</span>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Max Price:</label>
-          <input
-            type="number"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(Number(e.target.value))}
-            min="0"
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={isSale}
-              onChange={() => setIsSale(!isSale)}
-              className="mr-2"
-            />
-            On Sale
-          </label>
-        </div>
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={isInStock}
-              onChange={() => setIsInStock(!isInStock)}
-              className="mr-2"
-            />
-            In Stock
-          </label>
-        </div>
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={isNewArrival}
-              onChange={() => setIsNewArrival(!isNewArrival)}
-              className="mr-2"
-            />
-            New Arrival
-          </label>
-        </div>
+
+        <ReactSlider
+          min={0}
+          max={1000}
+          step={10}
+          value={priceRange}
+          onChange={(range: number[]) => setPriceRange([range[0], range[1]])} // ✅ Fixed TypeScript Error
+          className="w-full h-2 bg-gray-300 rounded-lg relative"
+          thumbClassName="w-5 h-5 bg-[#029FAE] rounded-full cursor-pointer shadow-md"
+          trackClassName="bg-[#029FAE] h-2 rounded-lg"
+        />
+      </div>
+
+      {/* Reset Button with Icon */}
+      <div className="flex justify-center">
         <button
-          onClick={handleFilterChange}
-          className="w-full py-2 px-4 bg-[#029FAE] text-white rounded-md hover:bg-[#028C8A]"
+          onClick={() => {
+            setPriceRange([0, 1000]);
+            setSelectedCategories([]);
+          }}
+          className="flex items-center gap-2 text-[#029FAE] hover:text-blue-800 text-sm font-medium"
         >
-          Apply Filter
+          <RotateCcw size={16} />
+          Reset Filters
         </button>
       </div>
     </div>
   );
 };
 
-export default PriceFilter;
-
+export default ProductFilters;

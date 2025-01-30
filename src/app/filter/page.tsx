@@ -1,109 +1,77 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import PriceFilter from "./PriceFilter";
-import { client } from "@/sanity/lib/client"; 
-import Link from "next/link";
-import Image from "next/image";
 import { Product } from "@/type/product";
+import { client } from "@/sanity/lib/client";
+import ProductCard from "@/components/products/ProductDetailCard";
+import ProductFilters from "./PriceFilter";
+import PaginationControls from "./pagination/PaginationControl";
 
-const FilterProduct = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+const PRODUCTS_PER_PAGE = 8;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const query = `*[_type == "products"]{
+const fetchProducts = async () => {
+  const query = `*[_type == "products"] | order(_createdAt desc) {
+    _id,
+    title,
+    price,
+    priceWithoutDiscount,
+    badge,
+    image {
+      asset-> {
         _id,
-        title,
-        price,
-        priceWithoutDiscount,
-        badge,
-        image {
-          asset-> {
-            _id,
-            url
-          }
-        },
-        category-> { title },
-        inventory,
-        tags
-      }`;
-
-      try {
-        console.log("Fetching products..."); 
-        const data: Product[] = await client.fetch(query);
-        console.log("Fetched products:", data);
-        setProducts(data);
-        setFilteredProducts(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setLoading(false);
+        url
       }
-    };
+    },
+    category-> {
+      title
+    },
+    description,
+    inventory,
+    tags
+  }`;
 
-    fetchProducts();
-  }, []);
-
-  const handlePriceFilterChange = (filters: { minPrice: number; maxPrice: number }) => {
-    const filtered = products.filter(
-      (product) =>
-        product.price >= filters.minPrice && product.price <= filters.maxPrice
-    );
-    setFilteredProducts(filtered);
-  };
-
-  const ProductCard = ({ product }: { product: Product }) => (
-    <div className="bg-white overflow-hidden relative rounded-md shadow-sm">
-      {product.priceWithoutDiscount && product.price < product.priceWithoutDiscount && (
-        <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 text-sm font-semibold rounded-full z-10">
-          Discount
-        </div>
-      )}
-      <Image
-        src={product.image?.asset?.url || "/default-image.jpg"}
-        alt={product.title}
-        width={500}
-        height={300}
-        className="w-full h-64 object-cover"
-        layout="intrinsic"
-        priority
-      />
-      <div className="p-4">
-        <div className="flex justify-between items-center">
-          <Link
-            href={`/products/${product._id}`}
-            className="text-lg font-semibold text-gray-800 hover:text-[#029FAE]"
-          >
-            {product.title}
-          </Link>
-          <p className="text-lg font-bold text-[#029FAE]">${product.price}</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  return (
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-1/4">
-          <PriceFilter onFilterChange={handlePriceFilterChange} />
-        </div>
-        <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  return await client.fetch(query);
 };
 
-export default FilterProduct;
+export default async function ShopProducts({ searchParams }: { searchParams: { page?: string } }) {
+  const allProducts: Product[] = await fetchProducts();
+  const totalPages = Math.ceil(allProducts.length / PRODUCTS_PER_PAGE);
+  const currentPage = Math.max(1, Math.min(totalPages, Number(searchParams.page) || 1));
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const displayedProducts = allProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
 
+  const categories = Array.from(
+    new Set(allProducts.map((p) => p.category?.title).filter(Boolean))
+  ) as string[];
+
+  const filtered = displayedProducts.filter(product => (product.inventory ?? 0) > 0);
+
+
+  return (
+    <section className="w-full max-w-[1920px] bg-white mx-auto py-10 px-4">
+      <div className="flex gap-6">
+        <div className="w-1/4 sticky top-20">
+          <ProductFilters categories={categories} />
+        </div>
+        <div className="w-3/4">
+          {filtered.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {filtered.map((product) => (
+                  <div key={product._id} className="relative">
+                    {product.badge && (
+                      <div className="absolute top-2 left-2 text-white px-4 py-1 text-sm font-semibold rounded-lg z-10 bg-green-500">
+                        {product.badge}
+                      </div>
+                    )}
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+              <PaginationControls currentPage={currentPage} totalPages={totalPages} />
+            </>
+          ) : (
+            <p className="text-center">No products available.</p>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}

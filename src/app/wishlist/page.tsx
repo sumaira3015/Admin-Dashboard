@@ -17,7 +17,7 @@ interface Product {
 interface CartItem {
   id: string;
   name: string;
-  price: string;
+  price: number;
   image: string;
   quantity: number;
 }
@@ -25,7 +25,7 @@ interface CartItem {
 const WishlistPage = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
-  
+
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const WishlistPage = () => {
   const handleAddToCart = (product: Product) => {
     const cartItem: CartItem = {
       ...product,
-      price: typeof product.price === "number" ? product.price.toString() : product.price,
+      price: typeof product.price === "number" ? product.price : parseFloat(product.price.replace("$", "")),
       quantity: 1,
     };
     addToCart(cartItem);

@@ -7,49 +7,44 @@ import { useWishlist } from "@/context/WishListContext";
 import { HeartIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
-interface Product {
+type Product = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   quantity: number;
   image: string;
-}
+};
 
-interface WishlistItem {
-  id: string;
-  name: string;
-  price: number; 
-  image: string;
-}
+type WishlistItem = Product;
 
-const CartPage = () => {
+const CartPage: React.FC = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
   const { addToWishlist } = useWishlist();
   const router = useRouter();
 
-  const [isAddedToWishlist, setIsAddedToWishlist] = useState(false);
+  const [isAddedToWishlist, setIsAddedToWishlist] = useState<boolean>(false);
+  const formatPrice = (price: string | number | undefined): string => {
+    if (price === undefined || isNaN(Number(price))) {
+      return "$0.00"; 
+    }
+    const numericPrice = Number(price);
+    return numericPrice.toFixed(2);
+  };
 
-  // Calculate the total price from the cart
-  const totalPrice = cart.reduce((total, product) => {
-    const price = typeof product.price === "string" ? parseFloat(product.price.replace("$", "")) : product.price;
-    return total + price * product.quantity;
+  const totalPrice = cart.reduce((total, product: Product) => {
+    return total + product.price * product.quantity;
   }, 0);
 
-  const handleCheckout = () => {
+  const handleCheckout = (): void => {
     router.push("/checkout");
   };
 
-  const handleQuantityChange = (id: string, quantity: number) => {
+  const handleQuantityChange = (id: string, quantity: number): void => {
     if (quantity > 0) updateQuantity(id, quantity);
   };
 
-  const discountedPrice = totalPrice;
-
-  const handleAddToWishlist = (product: Product) => {
-    const wishlistItem: WishlistItem = {
-      ...product,
-      price: parseFloat(product.price.replace("$", "")),
-    };
+  const handleAddToWishlist = (product: Product): void => {
+    const wishlistItem: WishlistItem = { ...product };
     addToWishlist(wishlistItem);
     setIsAddedToWishlist(true);
 
@@ -58,7 +53,6 @@ const CartPage = () => {
     }, 3000);
   };
 
-  // Store the updated cart in local storage whenever it changes
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -70,7 +64,7 @@ const CartPage = () => {
       <section className="col-span-1 md:col-span-2">
         <h2 className="text-2xl md:text-3xl font-bold text-[#272343] mb-8">Bag</h2>
         {cart.length > 0 ? (
-          cart.map((product) => (
+          cart.map((product: Product) => (
             <div
               key={product.id}
               className="flex flex-col md:flex-row items-center justify-between mb-6 border-b pb-6"
@@ -86,7 +80,7 @@ const CartPage = () => {
                 <div className="text-center md:text-left">
                   <p className="text-lg font-bold mb-2">{product.name}</p>
                   <p className="text-base font-bold mb-4">
-                    ${parseFloat(product.price.replace("$", "")).toFixed(2)} x {product.quantity}
+                    ${formatPrice(product.price)} x {product.quantity}
                   </p>
                   <div className="flex items-center justify-center md:justify-start space-x-4">
                     <button
@@ -122,7 +116,7 @@ const CartPage = () => {
         )}
       </section>
 
-      <aside className="bg-white shadow rounded-lg p-6">
+      <aside className="bg-white shadow rounded-lg p-6 sticky top-20 h-fit">
         <h2 className="text-xl md:text-2xl font-semibold mb-6 text-[#272343]">Summary</h2>
         {isAddedToWishlist && (
           <div className="text-green-500 font-semibold mb-4 text-center">
@@ -131,11 +125,21 @@ const CartPage = () => {
         )}
         <div className="flex justify-between text-sm mb-4">
           <span>Subtotal</span>
-          <span>${totalPrice.toFixed(2)}</span>
+          <span>${formatPrice(totalPrice)}</span>
         </div>
-        <div className="flex justify-between text-lg font-bold mb-8">
+        <div className="flex justify-between text-lg font-bold mb-4">
           <span>Total</span>
-          <span>${discountedPrice.toFixed(2)}</span>
+          <span>${formatPrice(totalPrice)}</span>
+        </div>
+        <div className="flex items-center space-x-2 mb-4">
+          <input
+            type="text"
+            placeholder="Enter coupon code"
+            className="w-full p-2 border rounded-lg"
+          />
+          <button className="bg-[#029FAE] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#027b89]">
+            Apply
+          </button>
         </div>
         <button
           className="w-full bg-[#029FAE] text-white py-3 rounded-lg font-semibold hover:bg-[#027b89]"

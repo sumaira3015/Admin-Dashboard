@@ -8,18 +8,18 @@ type ProductCardProps = {
 };
 
 const getBadgeColor = (badge: string) => {
-  if (!badge) return "bg-gray-500"; // Fallback for empty badges
+  if (!badge) return "bg-gray-500";
 
   switch (badge.toLowerCase()) {
     case "discount":
     case "out of stock":
-      return "bg-red-600"; // Darker red for better contrast
+      return "bg-red-600";
     case "sales":
-      return "bg-orange-600"; // Darker orange for better contrast
+      return "bg-orange-600"; 
     case "new":
-      return "bg-green-600"; // Darker green for better contrast
+      return "bg-green-600";
     default:
-      return "bg-gray-600"; // Default fallback for unknown badges
+      return "bg-gray-600"; 
   }
 };
 

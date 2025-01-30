@@ -1,21 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { HiMenu, HiX } from "react-icons/hi"; 
-import SearchBar from "./SearchBar"; 
+import { HiMenu, HiX } from "react-icons/hi";
+import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); 
+  }, []);
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/shop", label: "Shop" },
+    { href: "/filter", label: "Shop" },
     { href: "/allproducts", label: "Product" },
     { href: "/about", label: "About" },
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  if (!isClient) return null; 
 
   return (
     <div className="border-t border-b border-gray-200">
@@ -78,4 +85,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

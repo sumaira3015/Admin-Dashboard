@@ -7,6 +7,7 @@ import Navbar from "@/components/Header/Navbar";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishListContext";
 import Footer from "@/components/Footer/footer";
+import { ClerkProvider } from "@clerk/nextjs"; // Import ClerkProvider
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,20 +31,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <CartProvider>
-          <WishlistProvider>
-            <TopHeader />
-            <MainHeader />
-            <Navbar />
-            {children}
-            <Footer />
-          </WishlistProvider>
-        </CartProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <CartProvider>
+            <WishlistProvider>
+              <TopHeader />
+              <MainHeader />
+              <Navbar />
+              {children}
+              <Footer />
+            </WishlistProvider>
+          </CartProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
