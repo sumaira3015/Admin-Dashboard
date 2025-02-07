@@ -1,0 +1,26 @@
+{
+  "node": {
+    "5019c101a94c218e12cabfaadd433db6af2179ba": {
+      "workers": {
+        "app/sign-in/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cdell%5C%5CDesktop%5C%5CAdmin-Dashboard%5C%5CAdmin-Dashboard%20-%20Copy%5C%5Csrc%5C%5Ctype%5C%5Cauth.ts%22%2C%5B%22signIn%22%2C%22logout%22%5D%5D%5D&__client_imported__=true!",
+        "app/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cdell%5C%5CDesktop%5C%5CAdmin-Dashboard%5C%5CAdmin-Dashboard%20-%20Copy%5C%5Csrc%5C%5Ctype%5C%5Cauth.ts%22%2C%5B%22signIn%22%2C%22logout%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/sign-in/page": "action-browser",
+        "app/page": "action-browser"
+      }
+    },
+    "ca99a02c03684c3d47f870d6b2dd309e52fa2c63": {
+      "workers": {
+        "app/sign-in/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cdell%5C%5CDesktop%5C%5CAdmin-Dashboard%5C%5CAdmin-Dashboard%20-%20Copy%5C%5Csrc%5C%5Ctype%5C%5Cauth.ts%22%2C%5B%22signIn%22%2C%22logout%22%5D%5D%5D&__client_imported__=true!",
+        "app/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cdell%5C%5CDesktop%5C%5CAdmin-Dashboard%5C%5CAdmin-Dashboard%20-%20Copy%5C%5Csrc%5C%5Ctype%5C%5Cauth.ts%22%2C%5B%22signIn%22%2C%22logout%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/sign-in/page": "action-browser",
+        "app/page": "action-browser"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "UBkDgSezkhb2XksR7BmcrMxy1aorCJzIEEfuK/kx8Uc="
+}
